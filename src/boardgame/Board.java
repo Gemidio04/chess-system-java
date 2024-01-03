@@ -1,12 +1,13 @@
 package boardgame;
 
+import Chess.pieces.Rook;
+
 public class Board {
 	private int rows; 
 	private int column; 
 	private Piece[][] pieces;
 	
 	public Board(int rows, int column) {
-		super();
 		this.rows = rows;
 		this.column = column;
 		pieces = new Piece[rows][column];
@@ -38,6 +39,10 @@ public class Board {
 		return pieces[position.getRow()][position.getColumn()]; 
 	}
 	
-	
+	public void placePiece(Piece piece, Position position) {
+		pieces[position.getRow()][position.getColumn()]=piece; 
+		piece.position=position;
+	}
+
 	
 }
