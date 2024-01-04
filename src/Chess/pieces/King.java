@@ -3,6 +3,7 @@ package Chess.pieces;
 import Chess.ChessPiece;
 import Chess.Color;
 import boardgame.Board;
+import boardgame.Position;
 
 public class King extends ChessPiece{
 
@@ -13,6 +14,12 @@ public class King extends ChessPiece{
 	@Override
 	public String toString(){
 		return "K";
+	}
+
+	@Override
+	public boolean[][] possibleMoves() {
+		boolean[][] mat=new boolean[getBoard().getRows()][getBoard().getColumns()];
+		return mat;
 	}
 
 }
