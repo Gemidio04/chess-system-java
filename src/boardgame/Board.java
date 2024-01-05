@@ -64,7 +64,8 @@ public class Board {
 	}
 	
 
-	// VERIFICA SE ESSA POSIÇÃO EXISTE, RETORNANDO VERDADEIRO OU NÃO RETORNANDO FALSO(SERVE PARA AS 2): 
+	// VERIFICA SE ESSA POSIÇÃO PASSADA EXISTE. RETORNA VERDADEIRO SE EXISTIR,
+	// E RETORNA FALSO SE NÃO EXISTIR(SERVE PARA AS 2 positionExists): 
 	private boolean positionExists(int row, int column) {
 		return row>=0 && row<rows && column>=0 && column<columns; 
 	}
@@ -72,9 +73,10 @@ public class Board {
 	public boolean positionExists(Position position) {
 		return positionExists(position.getRow(), position.getColumn()); 
 	}
-
 	
-	// VERIFICA SE ESSA POSIÇÃO EXISTE E RETORNA ELA:
+	
+	// PRIMEIRO VERIFICA SE A POSIÇÃO EXISTE COM O MÉTODO positionExists,
+	//SE EXISTIR, VERIFICA SE TÊM UMA PEÇA NA POSIÇÃO PASSADA E RETORNA ELA:
 	public boolean thereIsAPiece(Position position){
 		if(!positionExists(position)) {
 			throw new BoardException("Position not on the board"); 
