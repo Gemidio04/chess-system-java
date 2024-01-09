@@ -15,6 +15,11 @@ public abstract class ChessPiece extends Piece {
 	public Color getColor() {
 		return color;
 	}
+	
+	// RETORNA UMA POSIÇÃO NO FORMATO DE XADREZ:
+	public ChessPosition getChessPosition() {
+		return ChessPosition.fromPosition(position);
+	}
 
 	// VERIFICA SE E
 	protected boolean isThereOpponentPiece(Position position) {
