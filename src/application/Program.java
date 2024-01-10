@@ -47,7 +47,7 @@ public class Program {
 				sc.nextLine();
 			}
 		}
-		//APÓS O CHECKMATE, LIMPA A TELA E EXIBE AS PEÇAS CAPTURADAS: 
+		//APÓS O CHECKMATE, LIMPA A TELA E EXIBE COMO FICOU O TABULEIRO APÓS O CHECKMATE: 
 		UI.clearScreen();
 		UI.printMatch(chessMatch, captured); 
 	}

@@ -69,7 +69,7 @@ public class ChessMatch {
 		Piece capturedPiece = makeMove(source, target);
 		// TESTA SE O JOGADOR ESTÁ COM O SEU REI EM CHECK, SE ESTIVER, VOLTA A
 		// PEÇA PARA O SEU DESTINO,ASSIM ELA FICARÁ COMO ESTAVA ANTES DO CHECK: 
-		if (testCheck(currentPlayer)) {
+		if (testCheck(currentPlayer)) {	
 			undoMove(source, target, capturedPiece);
 			throw new ChessException("You can't put yourself in check");
 		}
@@ -85,7 +85,8 @@ public class ChessMatch {
 	}
 	
 	private Piece makeMove(Position source, Position target) {
-		Piece p = board.removePiece(source);
+		ChessPiece p=(ChessPiece)board.removePiece(source);
+		p.increaseMoveCount();
 		Piece capturedPiece = board.removePiece(target);
 		board.placePiece(p, target);
 		
@@ -98,7 +99,8 @@ public class ChessMatch {
 	}
 
 	private void undoMove(Position source, Position target, Piece capturedPiece) {
-		Piece p = board.removePiece(target);
+		ChessPiece p =(ChessPiece)board.removePiece(target);
+		p.decreaseMoveCount();		
 		board.placePiece(p, source);
 
 		if (capturedPiece != null) {
@@ -161,20 +163,31 @@ public class ChessMatch {
 		return false;
 	}
 
+	// VERIFICA SE ESTÁ EM CHECKMATE: 
 	private boolean testCheckMate(Color color) {
+		// VERIFICA SE NÃO ESTÁ EM CHECK:
 		if(!testCheck(color)) {
 			return false; 
 		}
+		// PEGA TODAS AS PEÇAS DA COR PASSADA: 
 		List<Piece> list=piecesOnTheBoard.stream().filter(x->((ChessPiece)x).getColor()==color).collect(Collectors.toList()); 
 		for(Piece p: list){
+			// PEGA TODOS OS MOVIMENTOS POSSÍVEIS
+			// PARA O JOGADOR DA COR PASSADA: 
 			boolean[][] mat=p.possibleMoves();
 			for(int i=0;i<board.getRows();i++) {
-				for(int j=0;j<board.getColumns();j++) {
+				for(int j=0;j<board.getColumns();j++){
+					// PEGANDO A MATRIZ DE PEÇAS: 
 					if(mat[i][j]){
+						// MOVENDO A LISTA DE PEÇAS COM A CRIAÇÃO DAS VARIÁVEIS DE ORIGEM
+						// (PEÇAS DO JOGADOR) E CRIANDO A VARIÁVEL DE DESTINO(MATRIZ DE PEÇAS): 
 						Position source=((ChessPiece)p).getChessPosition().toPosition();
 						Position target=new Position(i,j);
-						Piece capturedPiece=makeMove(source, target); 
+						// MOVIMENTO A ORIGEM PARA O DESTINO: 
+						Piece capturedPiece=makeMove(source, target);
+						// APÓS MOVIMENTAR, TESTAMOS SE AINDA ESTÁ EM CHECK:
 						boolean testCheck=testCheck(color); 
+						// DESFAZENDO O MOVIMENTO(O MOVIMENTO FEITO ANTERIORMENTE SÓ FOI FEITO PARA TESTAR):
 						undoMove(source, target, capturedPiece);
 						if(!testCheck) {
 							return false; 
