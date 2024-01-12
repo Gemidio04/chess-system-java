@@ -35,11 +35,17 @@ public class Program {
 				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);
 
 				if (capturedPiece != null) {
-					captured.add(capturedPiece);
+				 	captured.add(capturedPiece);
 				}
+				// SE O PROMOTION É DIFERENTE DE NULO SIGNIFICA QUE UMA PEÇA FOI PROMOVIDA: 
 				if(chessMatch.getPromoted()!=null){
 					System.out.print("Enter piece for promotion (B/N/R/Q): ");
-					String type=sc.nextLine(); 
+					String type=sc.nextLine().toUpperCase(); 
+					// ENQUANTO O USUÁRIO NÃO DIGITAR 1 DAS 4 LETRAS, NÃO SAI DO WHILE: 
+					while(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {
+						System.out.print("Invalid value! Enter piece for promotion (B/N/R/Q): ");
+						type=sc.nextLine().toUpperCase();
+					}
 					chessMatch.replacePromotedPiece(type); 
 				}
 			}
