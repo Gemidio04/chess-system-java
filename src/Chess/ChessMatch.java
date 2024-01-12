@@ -1,9 +1,9 @@
 package Chess;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import Chess.pieces.Bishop;
 import Chess.pieces.King;
 import Chess.pieces.Knight;
@@ -21,7 +21,8 @@ public class ChessMatch {
 	private Board board;
 	private boolean check;
 	private boolean checkMate;
-	private ChessPiece enPassantVulnerable; 
+	private ChessPiece enPassantVulnerable;
+	private ChessPiece promoted; 
 
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -51,6 +52,10 @@ public class ChessMatch {
 	
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
+	}
+	
+	public ChessPiece getPromoted(){
+		return promoted; 
 	}
 
 	public ChessPiece[][] getPieces() {
@@ -84,7 +89,23 @@ public class ChessMatch {
 		}
 		// MOVIMENTO DA PEÇA:
 		ChessPiece movedPiece=(ChessPiece)board.piece(target); 
-		// FAZ O MESMO TESTE DO IF ACIMA SÓ QUE AGORA COM O OPONENTE DO JOGADOR:
+		
+		// PROMOTION:
+		
+		promoted=null; 
+		if(movedPiece instanceof Pawn){
+			// VERIFICANDO SE O PEÃO É BRANCO OU PRETO E SE ELE CHEGOU NA ÚLTIMA LINHA DO TABULEIRO: 
+			if(movedPiece.getColor()==Color.WHITE && target.getRow()==0 
+			|| movedPiece.getColor()==Color.BLACK && target.getRow()==7){
+				promoted=(ChessPiece)board.piece(target) ;
+				// TROCANDO O PEÃO POR PADRÃO PELA RAINHA: 
+				promoted=replacePromotedPiece("Q"); 
+				// TROCANDO A RAINHA POR UMA PEÇA MAIS PODEROSA:
+				
+			}
+		}
+		
+		// TESTA O CHECK DO OPONENTE DO JOGADOR:
 		check = (testCheck(opponent(currentPlayer))) ? true : false;
 		// VERIFICA SE A JOGADA FEITA DEIXOU O REI EM CHACKMATE: 
 		if (testCheckMate(opponent(currentPlayer))) {
@@ -106,6 +127,37 @@ public class ChessMatch {
 			enPassantVulnerable=null; 	
 		}
 		return (ChessPiece)capturedPiece;
+	}
+	
+	// TROCA A RAINHA PELA PEÇA ESCOLHIDA PELO USUÁRIO: 
+	public ChessPiece replacePromotedPiece(String type){
+		if(promoted==null) {
+			throw new IllegalStateException("There is no piece to be promoted"); 
+		}
+		// VERIFICANDO SE A LETRA DA PEÇA É VALIDA: 
+		if(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")){
+			throw new InvalidParameterException("Invalid type for promotion"); 
+		}
+		// POSIÇÃO DA PEÇA PROMOVIDA:  
+		Position pos=promoted.getChessPosition().toPosition(); 
+		Piece p=board.removePiece(pos); 
+		// EXCLUINDO DA LISTA DE PEÇAS DO TABULEIRO: 
+		piecesOnTheBoard.remove(p);
+		ChessPiece newPiece=newPiece(type, promoted.getColor());
+		// COLOCA ESSA NOVA PEÇA NA POSIÇÃO DA PEÇA PROMOVIDA
+		// E ADICIONA ELA NA LISTA DE PEÇAS DO TABULEIRO:
+		board.placePiece(newPiece, pos);
+		piecesOnTheBoard.add(newPiece); 
+		return newPiece; 
+	}
+	
+	// MÉTODO AUXILIAR PARA VERIFICAR QUAL É A PEÇA QUE SUBSTITUIRÁ O PEÃO: 
+	private ChessPiece newPiece(String type, Color color){
+		// USA O STRING PARA VER QUAL É O CORRESPONDENDE E PASSA A COR: 
+		if(type.equals("B")) return new Bishop(board, color);
+		if(type.equals("N")) return new Knight(board, color);
+		if(type.equals("Q")) return new Queen(board, color);
+		return new Rook(board, color);	
 	}
 	
 	// MOVE UMA PEÇA DA ORIGEM(SOURCE) PARA O DESTINO(TARGET): 
@@ -162,9 +214,6 @@ public class ChessMatch {
 				piecesOnTheBoard.remove(capturedPiece);
 			}
 		}
-		
-		// EN :
-		
 		return capturedPiece;
 	}
 
